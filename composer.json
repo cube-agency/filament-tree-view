@@ -1,0 +1,76 @@
+{
+    "name": "cube-agency/filament-tree-view",
+    "description": "Filament package to view records in tree view",
+    "keywords": [
+        "cube-agency",
+        "laravel",
+        "filament",
+        "filament-tree-view",
+        "nestedset"
+    ],
+    "homepage": "https://github.com/cube-agency/filament-tree-view",
+    "support": {
+        "issues": "https://github.com/cube-agency/filament-tree-view/issues",
+        "source": "https://github.com/cube-agency/filament-tree-view"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dmitrijs Mihailovs",
+            "email": "dmitrijs.mihailovs@cube.lv",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "filament/filament": "^3.0",
+        "illuminate/contracts": "^10.0",
+        "kalnoy/nestedset": "^6.0",
+        "spatie/laravel-package-tools": "^1.15.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.0",
+        "nunomaduro/collision": "^7.9",
+        "nunomaduro/larastan": "^2.0.1",
+        "orchestra/testbench": "^8.0",
+        "pestphp/pest": "^2.0",
+        "pestphp/pest-plugin-arch": "^2.0",
+        "pestphp/pest-plugin-laravel": "^2.0",
+        "phpstan/extension-installer": "^1.1",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "phpstan/phpstan-phpunit": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "CubeAgency\\FilamentTreeView\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CubeAgency\\FilamentTreeView\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": "@php ./vendor/bin/testbench package:discover --ansi",
+        "analyse": "vendor/bin/phpstan analyse",
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/pint"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "CubeAgency\\FilamentTreeView\\FilamentTreeViewServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
