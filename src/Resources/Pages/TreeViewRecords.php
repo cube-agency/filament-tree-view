@@ -29,7 +29,7 @@ class TreeViewRecords extends ListRecords
         ];
     }
 
-    public function getRowActions(Model $row)
+    public function getRowActions(Model $row): array
     {
         return [
             ($this->createChildAction())(['row' => $row->getKey()]),
@@ -67,5 +67,20 @@ class TreeViewRecords extends ListRecords
 
                 $this->redirect(static::$resource::getUrl('index'));
             });
+    }
+
+    public function getRowClasses(Model $row): array
+    {
+        return [];
+    }
+
+    public function getRowPrefix(Model $row): ?string
+    {
+        return '';
+    }
+
+    public function getRowSuffix(Model $row): ?string
+    {
+        return '';
     }
 }
