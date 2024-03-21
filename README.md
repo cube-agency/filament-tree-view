@@ -18,9 +18,26 @@ composer require cube-agency/filament-tree-view
 ## Usage
 This package uses [NestedSet](https://github.com/lazychaser/laravel-nestedset), you should setup your Model/table according to the readme.
 
+Then add trait to your model
+
+```php
+<?php
+
+namespace App\Models;
+
+use CubeAgency\FilamentTreeView\Traits\HasTreeView;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Kalnoy\Nestedset\NodeTrait;
+
+class ForumCategory extends Model
+{
+    use HasTreeView;
+}
+```
+
 After that you just need to extend ListRecords resource to use TreeViewRecords
 
-For example:
 ```php
 namespace App\Filament\Resources\ForumCategoryResource\Pages;
 
