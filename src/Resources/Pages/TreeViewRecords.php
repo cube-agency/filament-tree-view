@@ -69,6 +69,11 @@ class TreeViewRecords extends ListRecords
             });
     }
 
+    public function getRowTitle(Model $row): ?string
+    {
+        return $row->getAttribute('name');
+    }
+
     public function getRowClasses(Model $row): array
     {
         return [];

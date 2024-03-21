@@ -16,7 +16,7 @@
                 @endif
 
                 <div class="flex justify-between w-full items-center">
-                    <a href="{{ $page::getUrl('edit', [$row]) }}">{{ $row->name }}</a>
+                    <a href="{{ $page::getUrl('edit', [$row]) }}">{{ $this->getRowTitle($row) }}</a>
                     @if ($this->getRowSuffix($row))
                         <span class="text-sm">{{ $this->getRowSuffix($row) }}</span>
                     @endif
