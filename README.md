@@ -36,7 +36,7 @@ class ForumCategory extends Model
 }
 ```
 
-After that you just need to extend ListRecords resource to use TreeViewRecords
+After that you just need to extend ListRecords and CreateRecord pages to use TreeViewRecords and CreateTreeViewRecord respectively
 
 ```php
 namespace App\Filament\Resources\ForumCategoryResource\Pages;
@@ -49,6 +49,21 @@ class ListForumCategories extends TreeViewRecords
     protected static string $resource = ForumCategoryResource::class;
 }
 ```
+
+After that you just need to extend CreateRecord resource to use CreateTreeViewRecord
+
+```php
+namespace App\Filament\Resources\ForumCategoryResource\Pages;
+
+use App\Filament\Resources\ForumCategoryResource;
+use CubeAgency\FilamentTreeView\Resources\Pages\CreateTreeViewRecord;
+
+class CreateForumCategory extends CreateTreeViewRecord
+{
+    protected static string $resource = ForumCategoryResource::class;
+}
+```
+
 and that's it, you are ready to go.
 
 ## Testing

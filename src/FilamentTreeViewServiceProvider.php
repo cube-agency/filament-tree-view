@@ -4,7 +4,9 @@ namespace CubeAgency\FilamentTreeView;
 
 use Filament\Support\Assets\Asset;
 use Filament\Support\Assets\Css;
+use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
+use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -16,7 +18,18 @@ class FilamentTreeViewServiceProvider extends PackageServiceProvider
 
     public function configurePackage(Package $package): void
     {
-        $package->name(static::$name);
+        $package->name(static::$name)
+            ->hasInstallCommand(function (InstallCommand $command) {
+                $command
+                    ->publishConfigFile()
+                    ->askToStarRepoOnGitHub('cube-agency/filament-tree-view');
+            });
+
+        $configFileName = $package->shortName();
+
+        if (file_exists($package->basePath("/../config/{$configFileName}.php"))) {
+            $package->hasConfigFile();
+        }
 
         if (file_exists($package->basePath('/../resources/views'))) {
             $package->hasViews(static::$viewNamespace);
@@ -48,6 +61,7 @@ class FilamentTreeViewServiceProvider extends PackageServiceProvider
     {
         return [
             Css::make('filament-tree-view-styles', __DIR__ . '/../resources/dist/filament-tree-view.css'),
+            Js::make('filament-tree-view-scripts', __DIR__ . '/../resources/dist/filament-tree-view.js'),
         ];
     }
 }
