@@ -12,14 +12,14 @@ document.addEventListener('alpine:initializing', () => {
                     fallbackOnBody: true,
                     swapThreshold: 0.65,
                     draggable: '[data-sortable-item]',
-                    handle: '.js-sortable-handle',
+                    handle: '[data-sortable-handle]',
                     onMove: (evt) => {
                         if (this.maxDepth >= 0 && this.getDepth(evt.related) > this.maxDepth) {
                             return false;
                         }
                     },
                     onSort: () => {
-                        this.$wire.sortRows(elementsToArray(document.querySelector('#js-sortable-root-nodes')));
+                        this.$wire.sortRows(elementsToArray(document.querySelectorAll('#js-sortable-root-nodes')));
                     }
                 });
             }
@@ -36,7 +36,7 @@ document.addEventListener('alpine:initializing', () => {
 
     function elementsToArray(element) {
         let elements = [];
-        let items = element.querySelectorAll(':scope > .js-sortable-item')
+        let items = element[0].querySelectorAll(':scope > .js-sortable-item');
 
         items.forEach(function (child) {
             let childData = {id: child.dataset.id};

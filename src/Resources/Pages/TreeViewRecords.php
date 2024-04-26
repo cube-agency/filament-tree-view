@@ -55,7 +55,7 @@ class TreeViewRecords extends ListRecords
     public function createChildAction(): Action
     {
         return Action::make('createChild')
-            ->authorize('create')
+            ->authorize('create', auth()->user())
             ->url(function (array $arguments) {
                 return static::$resource::getUrl('create') . '?parentId=' . $arguments['row'];
             });
@@ -64,7 +64,7 @@ class TreeViewRecords extends ListRecords
     public function editAction(): Action
     {
         return Action::make('edit')
-            ->authorize('update')
+            ->authorize('update', auth()->user())
             ->url(function (array $arguments) {
                 return static::$resource::getUrl('edit', [$arguments['row']]);
             });
@@ -73,7 +73,7 @@ class TreeViewRecords extends ListRecords
     public function deleteAction(): Action
     {
         return Action::make('delete')
-            ->authorize('delete')
+            ->authorize('delete', auth()->user())
             ->requiresConfirmation()
             ->color('danger')
             ->modalIcon('heroicon-o-trash')

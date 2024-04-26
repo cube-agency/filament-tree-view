@@ -8,7 +8,7 @@
 >
     <div class="flex items-center bg-white mb-2 px-2 py-2 rounded shadow justify-between">
         <div class="flex w-full">
-            <div class="js-sortable-handle pr-2">
+            <div class="pr-2" data-sortable-handle>
                 <x-filament::icon icon="heroicon-o-bars-2" class="w-6 h-6"/>
             </div>
 
