@@ -4,6 +4,7 @@
      data-id="{{ $row->getKey() }}"
      class="js-sortable-item"
      wire:key="{{ $row->getKey() }}"
+     data-sortable-item
 >
     <div class="flex items-center bg-white mb-2 px-2 py-2 rounded shadow justify-between">
         <div class="flex w-full">
@@ -33,12 +34,12 @@
         </div>
         <div>
             <x-filament-actions::group
-                    :actions="$this->getRowActions($row)"
-                    label="Actions"
-                    icon="heroicon-m-ellipsis-vertical"
-                    color="primary"
-                    size="lg"
-                    dropdown-placement="bottom-start"
+                :actions="$this->getRowActions($row)"
+                label="Actions"
+                icon="heroicon-m-ellipsis-vertical"
+                color="primary"
+                size="lg"
+                dropdown-placement="bottom-start"
             />
         </div>
     </div>

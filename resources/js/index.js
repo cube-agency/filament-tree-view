@@ -1,5 +1,4 @@
 import Sortable from 'sortablejs';
-import $ from 'jquery';
 
 document.addEventListener('alpine:initializing', () => {
     window.Alpine.data('sortableTree', (maxDepth) => ({
@@ -12,7 +11,7 @@ document.addEventListener('alpine:initializing', () => {
                     animation: 150,
                     fallbackOnBody: true,
                     swapThreshold: 0.65,
-                    draggable: '.js-sortable-item',
+                    draggable: '[data-sortable-item]',
                     handle: '.js-sortable-handle',
                     onMove: (evt) => {
                         if (this.maxDepth >= 0 && this.getDepth(evt.related) > this.maxDepth) {
@@ -20,7 +19,7 @@ document.addEventListener('alpine:initializing', () => {
                         }
                     },
                     onSort: () => {
-                        this.$wire.sortRows(elementsToArray($('#js-sortable-root-nodes')));
+                        this.$wire.sortRows(elementsToArray(document.querySelector('#js-sortable-root-nodes')));
                     }
                 });
             }
@@ -37,13 +36,11 @@ document.addEventListener('alpine:initializing', () => {
 
     function elementsToArray(element) {
         let elements = [];
-        let items = element.children('.js-sortable-item');
+        let items = element.querySelectorAll(':scope > .js-sortable-item')
 
-        items.each(function () {
-            let child = $(this);
-            let id = child.attr('data-id');
-            let childData = {id: id};
-            let children = child.children('.js-sortable-group');
+        items.forEach(function (child) {
+            let childData = {id: child.dataset.id};
+            let children = child.querySelectorAll(':scope > .js-sortable-group');
 
             if (children.length > 0) {
                 childData.children = elementsToArray(children);
