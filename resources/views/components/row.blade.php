@@ -6,7 +6,7 @@
      wire:key="{{ $row->getKey() }}"
      data-sortable-item
 >
-    <div class="flex items-center bg-white mb-2 px-2 py-2 rounded shadow justify-between">
+    <div class="flex items-center bg-white mb-2 px-2 py-2 rounded shadow justify-between dark:bg-gray-800">
         <div class="flex w-full">
             <div class="pr-2" data-sortable-handle>
                 <x-filament::icon icon="heroicon-o-bars-2" class="w-6 h-6"/>
