@@ -1,13 +1,14 @@
 import Sortable from 'sortablejs';
 
 document.addEventListener('alpine:initializing', () => {
-    window.Alpine.data('sortableTree', (maxDepth) => ({
-        maxDepth,
+    window.Alpine.data('sortableTree', (data) => ({
+        maxDepth: data.maxDepth,
+        staticDepth: data.staticDepth || false,
         init() {
             let nestedSortables = document.getElementsByClassName('js-sortable-group');
             for (let i = 0; i < nestedSortables.length; i++) {
                 new Sortable(nestedSortables[i], {
-                    group: 'nested',
+                    group: 'nested' + (this.staticDepth ? i : ''),
                     animation: 150,
                     fallbackOnBody: true,
                     swapThreshold: 0.65,
@@ -20,7 +21,7 @@ document.addEventListener('alpine:initializing', () => {
                     },
                     onSort: () => {
                         this.$wire.sortRows(elementsToArray(document.querySelectorAll('#js-sortable-root-nodes')));
-                    }
+                    },
                 });
             }
         },
