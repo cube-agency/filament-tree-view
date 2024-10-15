@@ -6,6 +6,7 @@ use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Gate;
 
 class TreeViewRecords extends ListRecords
 {
@@ -23,6 +24,7 @@ class TreeViewRecords extends ListRecords
         return [
             'rows' => $this->getModel()::query()->withDepth()->get()->toTree()->sortBy('_lft'),
             'maxDepth' => $this->getMaxDepth(),
+            'sortable' => Gate::check('reorder', $this->getModel()),
         ];
     }
 
@@ -41,21 +43,23 @@ class TreeViewRecords extends ListRecords
     public function getRowActions(Model $row): array
     {
         $actions = [
-            ($this->editAction())(['row' => $row->getKey()]),
-            ($this->deleteAction())(['row' => $row->getKey()]),
+            ($this->editAction())(['row' => $row]),
+            ($this->deleteAction())(['row' => $row]),
         ];
 
         if ($row->depth < $this->getMaxDepth()) {
-            array_unshift($actions, ($this->createChildAction())(['row' => $row->getKey()]));
+            array_unshift($actions, ($this->createChildAction())(['row' => $row]));
         }
 
-        return $actions;
+        return array_filter($actions, function ($action) {
+            return $action->isVisible();
+        });
     }
 
     public function createChildAction(): Action
     {
         return Action::make('createChild')
-            ->authorize('create', auth()->user())
+            ->visible(Gate::check('create', $this->getModel()))
             ->url(function (array $arguments) {
                 return static::$resource::getUrl('create') . '?parentId=' . $arguments['row'];
             });
@@ -64,7 +68,9 @@ class TreeViewRecords extends ListRecords
     public function editAction(): Action
     {
         return Action::make('edit')
-            ->authorize('update', auth()->user())
+            ->visible(function (array $arguments) {
+                return Gate::check('update', [$this->getModel(), $arguments['row']]);
+            })
             ->url(function (array $arguments) {
                 return static::$resource::getUrl('edit', [$arguments['row']]);
             });
@@ -73,7 +79,9 @@ class TreeViewRecords extends ListRecords
     public function deleteAction(): Action
     {
         return Action::make('delete')
-            ->authorize('delete', auth()->user())
+            ->visible(function (array $arguments) {
+                return Gate::check('delete', [$this->getModel(), $arguments['row']]);
+            })
             ->requiresConfirmation()
             ->color('danger')
             ->modalIcon('heroicon-o-trash')

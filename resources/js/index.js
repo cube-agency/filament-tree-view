@@ -14,6 +14,7 @@ document.addEventListener('alpine:initializing', () => {
                     swapThreshold: 0.65,
                     draggable: '[data-sortable-item]',
                     handle: '[data-sortable-handle]',
+                    sort: data.sortable,
                     onMove: (evt) => {
                         if (this.maxDepth >= 0 && this.getDepth(evt.related) > this.maxDepth) {
                             return false;
