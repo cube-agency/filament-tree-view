@@ -14,9 +14,12 @@ class TreeViewRecords extends ListRecords
 
     public $page;
 
+    protected bool $hasPermissions = true;
+
     public function mount(): void
     {
         $this->page = static::$resource;
+        $this->hasPermissions = config('filament-tree-view.has_permissions', true);
     }
 
     protected function getViewData(): array
@@ -24,7 +27,7 @@ class TreeViewRecords extends ListRecords
         return [
             'rows' => $this->getModel()::query()->withDepth()->get()->toTree()->sortBy('_lft'),
             'maxDepth' => $this->getMaxDepth(),
-            'sortable' => Gate::check('reorder', $this->getModel()),
+            'sortable' => $this->hasPermissions ? Gate::check('reorder', $this->getModel()) : true,
         ];
     }
 
@@ -59,7 +62,9 @@ class TreeViewRecords extends ListRecords
     public function createChildAction(): Action
     {
         return Action::make('createChild')
-            ->visible(Gate::check('create', $this->getModel()))
+            ->visible(function () {
+                return $this->hasPermissions ? Gate::check('create', $this->getModel()) : true;
+            })
             ->url(function (array $arguments) {
                 return static::$resource::getUrl('create') . '?parentId=' . $arguments['row'];
             });
@@ -69,7 +74,7 @@ class TreeViewRecords extends ListRecords
     {
         return Action::make('edit')
             ->visible(function (array $arguments) {
-                return Gate::check('update', [$this->getModel(), $arguments['row']]);
+                return $this->hasPermissions ? Gate::check('update', [$this->getModel(), $arguments['row']]) : true;
             })
             ->url(function (array $arguments) {
                 return static::$resource::getUrl('edit', [$arguments['row']]);
@@ -80,7 +85,7 @@ class TreeViewRecords extends ListRecords
     {
         return Action::make('delete')
             ->visible(function (array $arguments) {
-                return Gate::check('delete', [$this->getModel(), $arguments['row']]);
+                return $this->hasPermissions ? Gate::check('delete', [$this->getModel(), $arguments['row']]) : true;
             })
             ->requiresConfirmation()
             ->color('danger')
