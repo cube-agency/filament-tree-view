@@ -2,7 +2,8 @@
     <div
             class="space-y-2 filament-tree-items"
             x-data="sortableTree({
-                maxDepth: @js($maxDepth)
+                maxDepth: @js($maxDepth),
+                sortable: @js($sortable)
             })"
     >
         <div id="js-sortable-root-nodes" class="js-sortable-group">

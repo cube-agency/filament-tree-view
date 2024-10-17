@@ -33,14 +33,16 @@
             </div>
         </div>
         <div>
-            <x-filament-actions::group
-                :actions="$this->getRowActions($row)"
-                label="Actions"
-                icon="heroicon-m-ellipsis-vertical"
-                color="primary"
-                size="lg"
-                dropdown-placement="bottom-start"
-            />
+            @if (count($this->getRowActions($row)))
+                <x-filament-actions::group
+                        :actions="$this->getRowActions($row)"
+                        label="Actions"
+                        icon="heroicon-m-ellipsis-vertical"
+                        color="primary"
+                        size="lg"
+                        dropdown-placement="bottom-start"
+                />
+            @endif
         </div>
     </div>
 
