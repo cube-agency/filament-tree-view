@@ -61,7 +61,7 @@ class TreeViewRecords extends ListRecords
         return Action::make('createChild')
             ->authorize(fn () => $this->hasPermissions ? static::getResource()::canCreate() : true)
             ->url(function (array $arguments) {
-                return static::$resource::getUrl('create') . '?parentId=' . $arguments['row'];
+                return static::$resource::getUrl('create') . '?parentId=' . $arguments['row']['id'];
             });
     }
 
