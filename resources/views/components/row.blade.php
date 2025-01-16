@@ -15,16 +15,15 @@
             this.open = ! this.open;
 
             const sessionKey = this.getSessionKey();
+            let ids = JSON.parse(sessionStorage.getItem(sessionKey)) || [];
 
             if (this.open) {
-                let ids = JSON.parse(sessionStorage.getItem(sessionKey)) || [];
                 if (! ids.includes(this.id)) ids.push(this.id);
-                sessionStorage.setItem(sessionKey, JSON.stringify(ids));
             } else {
-                let ids = JSON.parse(sessionStorage.getItem(sessionKey)) || [];
                 ids = ids.filter(id => id !== this.id);
-                sessionStorage.setItem(sessionKey, JSON.stringify(ids));
             }
+
+            sessionStorage.setItem(sessionKey, JSON.stringify(ids));
         },
     }"
     data-id="{{ $row->getKey() }}"
