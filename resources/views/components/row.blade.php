@@ -2,20 +2,16 @@
 
 <div x-data="{
         open: false,
-        page: '{{ str($page)->classBaseName() }}',
         id: '{{ $row->getKey() }}',
-        getSessionKey() {
-            return `${this.page}_opened_nodes`;
-        },
+        sessionKey: '{{ str($page)->classBaseName() }}_opened_nodes',
         init() {
-            let ids = JSON.parse(sessionStorage.getItem(this.getSessionKey())) || [];
+            let ids = JSON.parse(sessionStorage.getItem(this.sessionKey)) || [];
             this.open = ids.includes(this.id);
         },
         toggleOpen() {
             this.open = ! this.open;
 
-            const sessionKey = this.getSessionKey();
-            let ids = JSON.parse(sessionStorage.getItem(sessionKey)) || [];
+            let ids = JSON.parse(sessionStorage.getItem(this.sessionKey)) || [];
 
             if (this.open) {
                 if (! ids.includes(this.id)) ids.push(this.id);
@@ -23,7 +19,7 @@
                 ids = ids.filter(id => id !== this.id);
             }
 
-            sessionStorage.setItem(sessionKey, JSON.stringify(ids));
+            sessionStorage.setItem(this.sessionKey, JSON.stringify(ids));
         },
     }"
     data-id="{{ $row->getKey() }}"
