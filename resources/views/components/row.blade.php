@@ -1,10 +1,31 @@
 @props(['row', 'page'])
 
-<div x-data="{ open: false }"
-     data-id="{{ $row->getKey() }}"
-     class="js-sortable-item"
-     wire:key="{{ $row->getKey() }}"
-     data-sortable-item
+<div x-data="{
+        open: false,
+        id: '{{ $row->getKey() }}',
+        sessionKey: '{{ str($page)->classBaseName() }}_opened_nodes',
+        init() {
+            let ids = JSON.parse(sessionStorage.getItem(this.sessionKey)) || [];
+            this.open = ids.includes(this.id);
+        },
+        toggleOpen() {
+            this.open = ! this.open;
+
+            let ids = JSON.parse(sessionStorage.getItem(this.sessionKey)) || [];
+
+            if (this.open) {
+                if (! ids.includes(this.id)) ids.push(this.id);
+            } else {
+                ids = ids.filter(id => id !== this.id);
+            }
+
+            sessionStorage.setItem(this.sessionKey, JSON.stringify(ids));
+        },
+    }"
+    data-id="{{ $row->getKey() }}"
+    class="js-sortable-item"
+    wire:key="{{ $row->getKey() }}"
+    data-sortable-item
 >
     <div class="flex items-center bg-white mb-2 px-2 py-2 rounded shadow justify-between dark:bg-gray-800">
         <div class="flex w-full">
@@ -13,7 +34,7 @@
             </div>
 
             @if ($row->children->count())
-                <div class="flex items-center pr-2" x-on:click="open =! open" x-transition>
+                <div class="flex items-center pr-2" x-on:click="toggleOpen" x-transition>
                     <x-filament::icon x-show="open" icon="heroicon-o-chevron-up" class="w-5 h-5"/>
                     <x-filament::icon x-show="!open" icon="heroicon-o-chevron-right" class="w-5 h-5"/>
                 </div>
