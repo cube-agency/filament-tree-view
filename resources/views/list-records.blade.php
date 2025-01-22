@@ -19,7 +19,7 @@
                     'dark:bg-gray-900 dark:divide-gray/10 dark:border-t-gray/10',
                 ])>
                     <x-filament-tables::empty-state
-                        :heading="__('filament-tables::table.empty.heading')"
+                        :heading="__('filament-tables::table.empty.heading', ['model' => $model])"
                         icon="heroicon-o-x-mark"
                     />
                 </div>

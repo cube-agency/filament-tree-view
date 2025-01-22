@@ -21,12 +21,18 @@ class TreeViewRecords extends ListRecords
         $this->hasPermissions = config('filament-tree-view.has_permissions', true);
     }
 
+    protected function getTreeQueryBuilder(): Builder
+    {
+        return $this->getModel()::query();
+    }
+
     protected function getViewData(): array
     {
         return [
-            'rows' => $this->getModel()::query()->withDepth()->get()->toTree()->sortBy('_lft'),
+            'rows' => $this->getTreeQueryBuilder()->withDepth()->get()->toTree()->sortBy('_lft'),
             'maxDepth' => $this->getMaxDepth(),
             'sortable' => $this->hasPermissions ? static::getResource()::canReorder() : true,
+            'model' => static::getResource()::getPluralModelLabel(),
         ];
     }
 
