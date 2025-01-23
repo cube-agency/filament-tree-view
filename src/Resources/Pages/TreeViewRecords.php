@@ -63,6 +63,11 @@ class TreeViewRecords extends ListRecords
         return $actions;
     }
 
+    public function getRowUrl(Model $row): ?string
+    {
+        return $this->page::getUrl('edit', [$row]);
+    }
+
     public function createChildAction(): Action
     {
         return Action::make('createChild')
