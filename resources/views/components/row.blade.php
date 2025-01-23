@@ -1,5 +1,14 @@
 @props(['row', 'page'])
 
+@php
+    $url = $this->getRowUrl($row);
+    $title = $this->getRowTitle($row);
+    $prefix = $this->getRowPrefix($row);
+    $suffix = $this->getRowSuffix($row);
+    $actions = $this->getRowActions($row);
+    $childrenCount = $row->children->count();
+@endphp
+
 <div x-data="{
         open: false,
         id: '{{ $row->getKey() }}',
@@ -33,7 +42,7 @@
                 <x-filament::icon icon="heroicon-o-bars-2" class="w-6 h-6"/>
             </div>
 
-            @if ($row->children->count())
+            @if ($childrenCount)
                 <div class="flex items-center pr-2" x-on:click="toggleOpen" x-transition>
                     <x-filament::icon x-show="open" icon="heroicon-o-chevron-up" class="w-5 h-5"/>
                     <x-filament::icon x-show="!open" icon="heroicon-o-chevron-right" class="w-5 h-5"/>
@@ -41,22 +50,27 @@
             @endif
 
             <div @class(array_merge(['flex', 'w-full'], $this->getRowClasses($row)))>
-                @if ($this->getRowPrefix($row))
-                    <span class="pr-2">{{ $this->getRowPrefix($row) }}</span>
+                @if ($prefix)
+                    <span class="pr-2">{{ $prefix }}</span>
                 @endif
 
                 <div class="flex justify-between w-full items-center">
-                    <a href="{{ $page::getUrl('edit', [$row]) }}">{{ $this->getRowTitle($row) }}</a>
-                    @if ($this->getRowSuffix($row))
-                        <span class="text-sm">{{ $this->getRowSuffix($row) }}</span>
+                    @if ($url)
+                        <a href="{{ $url }}">{{ $title }}</a>
+                    @else
+                        {{ $title }}
+                    @endif
+
+                    @if ($suffix)
+                        <span class="text-sm">{{ $suffix }}</span>
                     @endif
                 </div>
             </div>
         </div>
         <div>
-            @if (count($this->getRowActions($row)))
+            @if (count($actions))
                 <x-filament-actions::group
-                        :actions="$this->getRowActions($row)"
+                        :actions="$actions"
                         label="Actions"
                         icon="heroicon-m-ellipsis-vertical"
                         color="primary"
@@ -67,7 +81,7 @@
         </div>
     </div>
 
-    @if ($row->children->count())
+    @if ($childrenCount)
         <div class="ml-8 js-sortable-group" x-show="open" x-collapse.duration.200ms>
             @foreach ($row->children->sortBy('_lft') as $child)
                 <x-filament-tree-view::row :row="$child" :page="$page"></x-filament-tree-view::row>

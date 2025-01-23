@@ -63,6 +63,11 @@ class TreeViewRecords extends ListRecords
         return $actions;
     }
 
+    public function getRowUrl(Model $row): ?string
+    {
+        return $this->page::getUrl('edit', [$row]);
+    }
+
     public function createChildAction(): Action
     {
         return Action::make('createChild')
@@ -97,9 +102,9 @@ class TreeViewRecords extends ListRecords
                 $row = $this->getModel()::find($arguments['row']['id']);
 
                 $row?->delete();
-
-                $this->redirect(static::$resource::getUrl('index'));
-            });
+            })
+            ->successRedirectUrl(fn () => static::$resource::getUrl('index'))
+            ->failureRedirectUrl(fn () => static::$resource::getUrl('index'));
     }
 
     public function getRowTitle(Model $row): ?string
