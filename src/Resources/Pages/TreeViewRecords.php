@@ -102,9 +102,9 @@ class TreeViewRecords extends ListRecords
                 $row = $this->getModel()::find($arguments['row']['id']);
 
                 $row?->delete();
-
-                $this->redirect(static::$resource::getUrl('index'));
-            });
+            })
+            ->successRedirectUrl(fn () => static::$resource::getUrl('index'))
+            ->failureRedirectUrl(fn () => static::$resource::getUrl('index'));
     }
 
     public function getRowTitle(Model $row): ?string
