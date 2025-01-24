@@ -1,16 +1,16 @@
 <x-filament-panels::page>
     <div
-            class="space-y-2 filament-tree-items"
-            x-data="sortableTree({
-                maxDepth: @js($maxDepth),
-                sortable: @js($sortable)
-            })"
+        class="space-y-2 filament-tree-items"
+        x-data="sortableTree({
+            maxDepth: @js($maxDepth),
+            sortable: @js($sortable)
+        })"
     >
         <div id="js-sortable-root-nodes" class="js-sortable-group">
             @forelse($rows as $row)
                 <x-filament-tree-view::row
-                        :row="$row"
-                        :page="$page"
+                    :row="$row"
+                    :page="$page"
                 />
             @empty
                 <div @class([
