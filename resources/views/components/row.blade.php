@@ -36,25 +36,25 @@
     wire:key="{{ $row->getKey() }}"
     data-sortable-item
 >
-    <div class="flex items-center bg-white mb-2 px-2 py-2 rounded shadow justify-between dark:bg-gray-800">
+    <div class="fi-treeview-row flex items-center bg-white mb-2 px-2 py-2 rounded shadow justify-between dark:bg-gray-800">
         <div class="flex w-full">
             <div class="pr-2" data-sortable-handle>
                 <x-filament::icon icon="heroicon-o-bars-2" class="w-6 h-6"/>
             </div>
 
             @if ($childrenCount)
-                <div class="flex items-center pr-2" x-on:click="toggleOpen" x-transition>
+                <div class="fi-treeview-row-toggle flex items-center pr-2" x-on:click="toggleOpen" x-transition>
                     <x-filament::icon x-show="open" icon="heroicon-o-chevron-up" class="w-5 h-5"/>
                     <x-filament::icon x-show="!open" icon="heroicon-o-chevron-right" class="w-5 h-5"/>
                 </div>
             @endif
 
-            <div @class(array_merge(['flex', 'w-full'], $this->getRowClasses($row)))>
+            <div @class(array_merge(['fi-treeview-row-item', 'flex', 'w-full'], $this->getRowClasses($row)))>
                 @if ($prefix)
-                    <span class="pr-2">{{ $prefix }}</span>
+                    <span class="fi-treeview-row-item-prefix pr-2">{{ $prefix }}</span>
                 @endif
 
-                <div class="flex justify-between w-full items-center">
+                <div class="fi-treeview-row-item-title flex justify-between w-full items-center">
                     @if ($url)
                         <a href="{{ $url }}">{{ $title }}</a>
                     @else
@@ -62,7 +62,7 @@
                     @endif
 
                     @if ($suffix)
-                        <span class="text-sm">{{ $suffix }}</span>
+                        <span class="text-sm fi-treeview-row-item-suffix">{{ $suffix }}</span>
                     @endif
                 </div>
             </div>
