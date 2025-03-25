@@ -38,6 +38,7 @@ class TreeViewRecords extends ListRecords
             'rows' => $this->getTreeQueryBuilder()->withDepth()->get()->toTree()->sortBy('_lft'),
             'maxDepth' => $this->getMaxDepth(),
             'sortable' => $this->canReorder(),
+            'model' => static::getResource()::getPluralModelLabel(),
         ];
     }
 
@@ -65,6 +66,11 @@ class TreeViewRecords extends ListRecords
         }
 
         return $actions;
+    }
+
+    public function getRowUrl(Model $row): ?string
+    {
+        return $this->page::getUrl('edit', [$row]);
     }
 
     public function canReorder(): bool
@@ -130,9 +136,9 @@ class TreeViewRecords extends ListRecords
                 $row = $this->getModel()::find($arguments['row']['id']);
 
                 $row?->delete();
-
-                $this->redirect(static::$resource::getUrl('index'));
-            });
+            })
+            ->successRedirectUrl(fn () => static::$resource::getUrl('index'))
+            ->failureRedirectUrl(fn () => static::$resource::getUrl('index'));
     }
 
     public function canDelete(Model $row): bool
@@ -167,11 +173,6 @@ class TreeViewRecords extends ListRecords
     public function getRowSuffix(Model $row): ?string
     {
         return '';
-    }
-
-    public function getRowUrl(Model $row): ?string
-    {
-        return static::$resource::getUrl('edit', [$row]);
     }
 
     public function getMaxDepth(): int
