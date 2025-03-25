@@ -6,7 +6,6 @@ use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 
 class TreeViewRecords extends ListRecords
 {
@@ -16,24 +15,23 @@ class TreeViewRecords extends ListRecords
 
     protected bool $hasPermissions = true;
 
+    protected bool $hasUserOnyPolicy = false;
+
+    protected array $permissionsCache = [];
+
     public function mount(): void
     {
         $this->page = static::$resource;
         $this->hasPermissions = config('filament-tree-view.has_permissions', true);
-    }
-
-    protected function getTreeQueryBuilder(): Builder
-    {
-        return $this->getModel()::query();
+        $this->hasUserOnyPolicy = config('filament-tree-view.has_user_only_policy', false);
     }
 
     protected function getViewData(): array
     {
         return [
-            'rows' => $this->getTreeQueryBuilder()->withDepth()->get()->toTree()->sortBy('_lft'),
+            'rows' => $this->getModel()::query()->withDepth()->get()->toTree()->sortBy('_lft'),
             'maxDepth' => $this->getMaxDepth(),
-            'sortable' => $this->hasPermissions ? static::getResource()::canReorder() : true,
-            'model' => static::getResource()::getPluralModelLabel(),
+            'sortable' => $this->canReorder(),
         ];
     }
 
@@ -63,38 +61,62 @@ class TreeViewRecords extends ListRecords
         return $actions;
     }
 
-    public function getRowUrl(Model $row): ?string
+    public function canReorder(): bool
     {
-        return $this->page::getUrl('edit', [$row]);
+        if (!$this->hasPermissions) {
+            return true;
+        }
+
+        return $this->permissionsCache['canReorder'] = $this->permissionsCache['canReorder']
+            ?? static::getResource()::canReorder();
     }
 
     public function createChildAction(): Action
     {
         return Action::make('createChild')
-            ->authorize(fn () => $this->hasPermissions ? static::getResource()::canCreate() : true)
+            ->authorize(fn () => $this->canCreate())
             ->url(function (array $arguments) {
                 return static::$resource::getUrl('create') . '?parentId=' . $arguments['row']['id'];
             });
     }
 
+    public function canCreate(): bool
+    {
+        if (!$this->hasPermissions) {
+            return true;
+        }
+
+        return $this->permissionsCache['canCreate'] = $this->permissionsCache['canCreate']
+            ?? static::getResource()::canCreate();
+    }
+
     public function editAction(): Action
     {
         return Action::make('edit')
-            ->authorize(fn (array $arguments) => $this->hasPermissions ? static::getResource()::canEdit($arguments['row']) : true)
+            ->authorize(fn (array $arguments) => $this->canEdit($arguments['row']))
             ->url(function (array $arguments) {
                 return static::$resource::getUrl('edit', [$arguments['row']]);
             });
     }
 
+    public function canEdit(Model $row): bool
+    {
+        if (!$this->hasPermissions) {
+            return true;
+        }
+
+        if (!$this->hasUserOnyPolicy) {
+            return static::getResource()::canEdit($row);
+        }
+
+        return $this->permissionsCache['canEdit'] = $this->permissionsCache['canEdit']
+            ?? static::getResource()::canEdit($row);
+    }
+
     public function deleteAction(): Action
     {
         return Action::make('delete')
-            ->authorize(function (array $arguments) {
-                $model = app(static::getModel());
-                $row = $model->newInstance($arguments['row']);
-
-                return $this->hasPermissions ? static::getResource()::canDelete($row) : true;
-            })
+            ->authorize(fn(array $arguments) => $this->canDelete($arguments['row']))
             ->requiresConfirmation()
             ->color('danger')
             ->modalIcon('heroicon-o-trash')
@@ -102,9 +124,23 @@ class TreeViewRecords extends ListRecords
                 $row = $this->getModel()::find($arguments['row']['id']);
 
                 $row?->delete();
-            })
-            ->successRedirectUrl(fn () => static::$resource::getUrl('index'))
-            ->failureRedirectUrl(fn () => static::$resource::getUrl('index'));
+
+                $this->redirect(static::$resource::getUrl('index'));
+            });
+    }
+
+    public function canDelete(Model $row): bool
+    {
+        if (!$this->hasPermissions) {
+            return true;
+        }
+
+        if (!$this->hasUserOnyPolicy) {
+            return static::getResource()::canDelete($row);
+        }
+
+        return $this->permissionsCache['canDelete'] = $this->permissionsCache['canDelete']
+            ?? static::getResource()::canDelete($row);
     }
 
     public function getRowTitle(Model $row): ?string
@@ -125,6 +161,11 @@ class TreeViewRecords extends ListRecords
     public function getRowSuffix(Model $row): ?string
     {
         return '';
+    }
+
+    public function getRowUrl(Model $row): ?string
+    {
+        return static::$resource::getUrl('edit', [$row]);
     }
 
     public function getMaxDepth(): int
