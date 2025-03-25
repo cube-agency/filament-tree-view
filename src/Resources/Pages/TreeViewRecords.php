@@ -128,7 +128,13 @@ class TreeViewRecords extends ListRecords
     public function deleteAction(): Action
     {
         return Action::make('delete')
-            ->authorize(fn(array $arguments) => $this->canDelete($arguments['row']))
+            ->authorize(function (array $arguments) {
+                $model = app(static::getModel());
+                $row = $model->newInstance($arguments['row'])
+                    ->forceFill(['id' => $arguments['row']['id']]);
+
+                return $this->canDelete($row);
+            })
             ->requiresConfirmation()
             ->color('danger')
             ->modalIcon('heroicon-o-trash')
