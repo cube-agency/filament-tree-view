@@ -6,6 +6,7 @@ use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class TreeViewRecords extends ListRecords
 {
@@ -26,10 +27,15 @@ class TreeViewRecords extends ListRecords
         $this->hasUserOnyPolicy = config('filament-tree-view.has_user_only_policy', false);
     }
 
+    protected function getTreeQueryBuilder(): Builder
+    {
+        return $this->getModel()::query();
+    }
+
     protected function getViewData(): array
     {
         return [
-            'rows' => $this->getModel()::query()->withDepth()->get()->toTree()->sortBy('_lft'),
+            'rows' => $this->getTreeQueryBuilder()->withDepth()->get()->toTree()->sortBy('_lft'),
             'maxDepth' => $this->getMaxDepth(),
             'sortable' => $this->canReorder(),
         ];
