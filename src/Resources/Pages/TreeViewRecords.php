@@ -16,7 +16,7 @@ class TreeViewRecords extends ListRecords
 
     protected bool $hasPermissions = true;
 
-    protected bool $hasUserOnyPolicy = false;
+    protected bool $hasUserOnlyPolicy = false;
 
     protected array $permissionsCache = [];
 
@@ -24,7 +24,7 @@ class TreeViewRecords extends ListRecords
     {
         $this->page = static::$resource;
         $this->hasPermissions = config('filament-tree-view.has_permissions', true);
-        $this->hasUserOnyPolicy = config('filament-tree-view.has_user_only_policy', false);
+        $this->hasUserOnlyPolicy = config('filament-tree-view.has_user_only_policy', false);
     }
 
     protected function getTreeQueryBuilder(): Builder
@@ -117,7 +117,7 @@ class TreeViewRecords extends ListRecords
             return true;
         }
 
-        if (!$this->hasUserOnyPolicy) {
+        if (!$this->hasUserOnlyPolicy) {
             return static::getResource()::canEdit($row);
         }
 
@@ -153,7 +153,7 @@ class TreeViewRecords extends ListRecords
             return true;
         }
 
-        if (!$this->hasUserOnyPolicy) {
+        if (!$this->hasUserOnlyPolicy) {
             return static::getResource()::canDelete($row);
         }
 
