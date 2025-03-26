@@ -15,6 +15,20 @@ You can install the package via composer:
 composer require cube-agency/filament-tree-view
 ```
 
+## Configuration
+
+You can publish the config file with:
+
+```bash
+php artisan vendor:publish --tag="filament-tree-view-config"
+```
+
+## Available Configuration Options
+
+* **max_depth**: Controls the maximum nesting level of the tree view.
+* **has_permissions**: When set to true, actions will check user permissions before allowing them. If set to false, actions will be available to all users.
+* **has_user_only_policy**: When set to true, resource-specific permissions are ignored and only user permissions are checked improving performance.
+
 ## Usage
 This package uses [NestedSet](https://github.com/lazychaser/laravel-nestedset), you should setup your Model/table according to the readme.
 
