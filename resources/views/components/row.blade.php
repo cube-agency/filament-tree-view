@@ -87,5 +87,7 @@
                 <x-filament-tree-view::row :row="$child" :page="$page"></x-filament-tree-view::row>
             @endforeach
         </div>
+    @else
+        <div class="ml-8 js-sortable-group"></div>
     @endif
 </div>
