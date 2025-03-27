@@ -4,27 +4,48 @@ document.addEventListener('alpine:initializing', () => {
     window.Alpine.data('sortableTree', (data) => ({
         maxDepth: data.maxDepth,
         staticDepth: data.staticDepth || false,
+
         init() {
+            this.initializeSortables();
+        },
+
+        initializeSortables() {
             let nestedSortables = document.getElementsByClassName('js-sortable-group');
             for (let i = 0; i < nestedSortables.length; i++) {
-                new Sortable(nestedSortables[i], {
-                    group: 'nested' + (this.staticDepth ? i : ''),
-                    animation: 150,
-                    fallbackOnBody: true,
-                    swapThreshold: 0.65,
-                    draggable: '[data-sortable-item]',
-                    handle: '[data-sortable-handle]',
-                    sort: data.sortable,
-                    onMove: (evt) => {
-                        if (this.maxDepth >= 0 && this.getDepth(evt.related) > this.maxDepth) {
-                            return false;
-                        }
-                    },
-                    onSort: () => {
-                        this.$wire.sortRows(elementsToArray(document.querySelectorAll('#js-sortable-root-nodes')));
-                    },
-                });
+                this.createSortableInstance(nestedSortables[i], i);
             }
+        },
+
+        createSortableInstance(element, index) {
+            new Sortable(element, {
+                group: 'nested' + (this.staticDepth ? index : ''),
+                animation: 150,
+                fallbackOnBody: true,
+                swapThreshold: 0.65,
+                draggable: '[data-sortable-item]',
+                handle: '[data-sortable-handle]',
+                sort: data.sortable,
+                onMove: (evt) => this.handleMove(evt),
+                onSort: () => this.handleSort(),
+            });
+        },
+
+        handleMove(evt) {
+            const movedSideways = evt.draggedRect.left !== evt.relatedRect.left;
+            const relatedDepth = evt.related ? this.getDepth(evt.related) : 0;
+            const draggedDepth = this.getDepth(evt.dragged);
+            const draggedTotalDepth = this.getDeepestElementDepth(evt.dragged);
+            const draggedChildDepth = draggedTotalDepth - draggedDepth;
+            const depth = Math.max(relatedDepth, draggedDepth) + draggedChildDepth;
+            const isTooDeep = this.maxDepth >= 0 && depth > this.maxDepth;
+
+            if (isTooDeep && movedSideways) {
+                return false;
+            }
+        },
+
+        handleSort() {
+            this.$wire.sortRows(elementsToArray(document.querySelectorAll('#js-sortable-root-nodes')));
         },
 
         getDepth(el, depth = 0) {
@@ -34,7 +55,20 @@ document.addEventListener('alpine:initializing', () => {
             }
             return depth;
         },
-    }))
+
+        getDeepestElementDepth(el, depth = 0) {
+            const depths = [];
+            const items = el.querySelectorAll('.js-sortable-item');
+            depths.push(this.getDepth(el, depth));
+
+            items.forEach((item) => {
+                const itemDepth = this.getDepth(item, depth);
+                depths.push(itemDepth);
+            });
+
+            return Math.max(...depths);
+        },
+    }));
 
     function elementsToArray(element) {
         let elements = [];
@@ -53,4 +87,4 @@ document.addEventListener('alpine:initializing', () => {
 
         return elements;
     }
-})
+});
