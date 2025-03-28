@@ -6,6 +6,7 @@
     $prefix = $this->getRowPrefix($row);
     $suffix = $this->getRowSuffix($row);
     $actions = $this->getRowActions($row);
+    $background = $this->getRowBackground($row);
     $childrenCount = $row->children->count();
 @endphp
 
@@ -37,7 +38,8 @@
     data-sortable-item
 >
     <div class="fi-treeview-row flex items-center bg-white mb-2
-        {{$compact ? 'px-0.5 py-0.5' : 'px-2 py-2'}} rounded shadow justify-between dark:bg-gray-800">
+        {{$compact ? 'px-0.5 py-0.5' : 'px-2 py-2'}} rounded shadow justify-between dark:bg-gray-800"
+        @if ($background) style="background: {{ $background }};" @endif>
         <div class="flex w-full">
             <div class="pr-2" data-sortable-handle>
                 <x-filament::icon icon="heroicon-o-bars-2" class="w-6 h-6"/>

@@ -191,4 +191,12 @@ class TreeViewRecords extends ListRecords
     {
         return config('filament-tree-view.compact', false);
     }
+
+    /**
+     * Provides a background color/image for the row if specified.
+     */
+    public function getRowBackground(Model $row): ?string
+    {
+        return null;
+    }
 }
