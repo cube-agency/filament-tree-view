@@ -11,6 +11,7 @@
                 <x-filament-tree-view::row
                     :row="$row"
                     :page="$page"
+                    :compact="$compact"
                 />
             @empty
                 <div @class([

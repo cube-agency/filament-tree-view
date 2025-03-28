@@ -1,4 +1,4 @@
-@props(['row', 'page'])
+@props(['row', 'page', 'compact' => false])
 
 @php
     $url = $this->getRowUrl($row);
@@ -36,7 +36,8 @@
     wire:key="{{ $row->getKey() }}"
     data-sortable-item
 >
-    <div class="fi-treeview-row flex items-center bg-white mb-2 px-2 py-2 rounded shadow justify-between dark:bg-gray-800">
+    <div class="fi-treeview-row flex items-center bg-white mb-2
+        {{$compact ? 'px-0.5 py-0.5' : 'px-2 py-2'}} rounded shadow justify-between dark:bg-gray-800">
         <div class="flex w-full">
             <div class="pr-2" data-sortable-handle>
                 <x-filament::icon icon="heroicon-o-bars-2" class="w-6 h-6"/>
@@ -84,7 +85,7 @@
     @if ($childrenCount)
         <div class="ml-8 js-sortable-group" x-show="open" x-collapse.duration.200ms>
             @foreach ($row->children->sortBy('_lft') as $child)
-                <x-filament-tree-view::row :row="$child" :page="$page"></x-filament-tree-view::row>
+                <x-filament-tree-view::row :row="$child" :page="$page" :compact="$compact"></x-filament-tree-view::row>
             @endforeach
         </div>
     @else

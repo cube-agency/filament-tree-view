@@ -26,6 +26,7 @@ php artisan vendor:publish --tag="filament-tree-view-config"
 ## Available Configuration Options
 
 * **max_depth**: Controls the maximum nesting level of the tree view.
+* **compact**: When set to true, the tree view will be displayed in a compact format. This is useful for displaying large trees with many nodes.
 * **has_permissions**: When set to true, actions will check user permissions before allowing them. If set to false, actions will be available to all users.
 * **has_user_only_policy**: When set to true, resource-specific permissions are ignored and only user permissions are checked improving performance.
 
