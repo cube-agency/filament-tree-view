@@ -38,6 +38,7 @@ class TreeViewRecords extends ListRecords
             'rows' => $this->getTreeQueryBuilder()->withDepth()->get()->toTree()->sortBy('_lft'),
             'maxDepth' => $this->getMaxDepth(),
             'sortable' => $this->canReorder(),
+            'compact' => $this->getCompact(),
             'model' => static::getResource()::getPluralModelLabel(),
         ];
     }
@@ -184,5 +185,18 @@ class TreeViewRecords extends ListRecords
     public function getMaxDepth(): int
     {
         return config('filament-tree-view.max_depth');
+    }
+
+    public function getCompact(): bool
+    {
+        return config('filament-tree-view.compact', false);
+    }
+
+    /**
+     * Provides a background color/image for the row if specified.
+     */
+    public function getRowBackground(Model $row): ?string
+    {
+        return null;
     }
 }
