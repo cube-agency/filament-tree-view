@@ -206,7 +206,6 @@ class TreeViewRecords extends ListRecords
     {
         $searchTerm = strtolower(trim($searchTerm));
         $results = $this->searchQuery($this->getTreeQueryBuilder(), $searchTerm)
-            ->withDepth()
             ->select('id')
             ->get()
             ->toArray();
