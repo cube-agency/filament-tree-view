@@ -5,8 +5,10 @@ document.addEventListener('alpine:initializing', () => {
         maxDepth: data.maxDepth,
         staticDepth: data.staticDepth || false,
         sortableInstances: [],
+        fullTree: [],
 
         init() {
+            this.fullTree = elementsToArray(document.querySelectorAll('#js-sortable-root-nodes'));
             this.initializeSortables();
         },
 
@@ -60,7 +62,7 @@ document.addEventListener('alpine:initializing', () => {
         },
 
         handleSort() {
-            this.$wire.sortRows(elementsToArray(document.querySelectorAll('#js-sortable-root-nodes')));
+            this.$wire.sortRows(this.fullTree);
         },
 
         getDepth(el, depth = 0) {
@@ -102,13 +104,26 @@ document.addEventListener('alpine:initializing', () => {
                 this.enableSorting();
             }
 
+            if (!response.searchTerm) {
+                emptyContainer?.classList?.add('hidden');
+                items.forEach(item => item.style.display = '');
+                return;
+            }
+
             if (!response.results.length) {
                 emptyContainer?.classList?.remove('hidden');
             }
 
+            const childrenIds = [];
+            const matchingIds = response.results.map(m => parseInt(m.id));
+            this.findAllChildrenIds(this.fullTree, matchingIds, childrenIds);
+
+            const visibleIds = [...new Set([...matchingIds, ...childrenIds])];
+
             items.forEach(item => {
-                const match = !response.searchTerm
-                    || response.results.some(m => m.id === parseInt(item.dataset.id));
+                const id = parseInt(item.dataset.id);
+                const match = visibleIds.includes(id);
+
                 item.style.display = match ? '' : 'none';
 
                 if (match) {
@@ -119,6 +134,35 @@ document.addEventListener('alpine:initializing', () => {
                     }
                 }
             });
+        },
+
+        // Helper method to recursively find all children of matching nodes
+        findAllChildrenIds(nodes, matchingIds, resultIds) {
+            if (!nodes || !nodes.length) return;
+
+            for (const node of nodes) {
+                // If this node is a match, add all its children recursively
+                if (matchingIds.includes(parseInt(node.id))) {
+                    this.collectAllChildrenIds(node, resultIds);
+                }
+
+                // Continue searching the tree
+                if (node.children && node.children.length) {
+                    this.findAllChildrenIds(node.children, matchingIds, resultIds);
+                }
+            }
+        },
+
+        // Helper method to collect all descendant IDs of a node
+        collectAllChildrenIds(node, resultIds) {
+            if (!node.children) return;
+
+            for (const child of node.children) {
+                resultIds.push(parseInt(child.id));
+                if (child.children && child.children.length) {
+                    this.collectAllChildrenIds(child, resultIds);
+                }
+            }
         }
     }));
 
