@@ -5,7 +5,7 @@
 >
     <x-filament::input
         type="search"
-        x-on:input.debounce.300ms="$dispatch('search-input', {value: $event.target.value})"
+        x-on:input.debounce.500ms="$dispatch('search-input', {value: $event.target.value})"
         placeholder="{{ __('filament-tables::table.fields.search.placeholder') }}"
         autocomplete="off"
     />
