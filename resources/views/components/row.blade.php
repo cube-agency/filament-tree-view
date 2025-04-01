@@ -14,6 +14,7 @@
         open: false,
         id: '{{ $row->getKey() }}',
         sessionKey: '{{ str($page)->classBaseName() }}_opened_nodes',
+        originalState: null,
         init() {
             let ids = JSON.parse(sessionStorage.getItem(this.sessionKey)) || [];
             this.open = ids.includes(this.id);
@@ -31,10 +32,20 @@
 
             sessionStorage.setItem(this.sessionKey, JSON.stringify(ids));
         },
+        handleSearch(searchTerm) {
+            if (searchTerm) {
+                this.originalState ??= this.open;
+                this.open = true;
+            } else {
+                this.open = this.originalState;
+                this.originalState = null;
+            }
+        }
     }"
     data-id="{{ $row->getKey() }}"
     class="js-sortable-item"
     wire:key="{{ $row->getKey() }}"
+    x-on:search-complete.window="handleSearch($event.detail.searchTerm)"
     data-sortable-item
 >
     <div class="fi-treeview-row flex items-center bg-white mb-2
