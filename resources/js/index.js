@@ -4,6 +4,7 @@ document.addEventListener('alpine:initializing', () => {
     window.Alpine.data('sortableTree', (data) => ({
         maxDepth: data.maxDepth,
         staticDepth: data.staticDepth || false,
+        sortableInstances: [],
 
         init() {
             this.initializeSortables();
@@ -17,7 +18,7 @@ document.addEventListener('alpine:initializing', () => {
         },
 
         createSortableInstance(element, index) {
-            new Sortable(element, {
+            const instance = new Sortable(element, {
                 group: 'nested' + (this.staticDepth ? index : ''),
                 animation: 150,
                 fallbackOnBody: true,
@@ -27,6 +28,20 @@ document.addEventListener('alpine:initializing', () => {
                 sort: data.sortable,
                 onMove: (evt) => this.handleMove(evt),
                 onSort: () => this.handleSort(),
+            });
+
+            this.sortableInstances.push(instance);
+        },
+
+        enableSorting() {
+            this.sortableInstances.forEach(instance => {
+                instance.option('disabled', false);
+            });
+        },
+
+        disableSorting() {
+            this.sortableInstances.forEach(instance => {
+                instance.option('disabled', true);
             });
         },
 
@@ -79,6 +94,13 @@ document.addEventListener('alpine:initializing', () => {
             this.$dispatch('search-complete', response);
             const items = document.querySelectorAll('.js-sortable-item');
             const emptyContainer = document.querySelector('.empty-tree-results-container');
+
+            // Disable sorting if we have search results and a search term
+            if (response.searchTerm && response.results.length) {
+                this.disableSorting();
+            } else {
+                this.enableSorting();
+            }
 
             if (!response.results.length) {
                 emptyContainer?.classList?.remove('hidden');
