@@ -68,6 +68,36 @@ document.addEventListener('alpine:initializing', () => {
 
             return Math.max(...depths);
         },
+
+        async search(searchTerm) {
+            this.handleSearchResult(
+                await this.$wire.search(searchTerm)
+            );
+        },
+
+        handleSearchResult(response) {
+            this.$dispatch('search-complete', response);
+            const items = document.querySelectorAll('.js-sortable-item');
+            const emptyContainer = document.querySelector('.empty-tree-results-container');
+
+            if (!response.results.length) {
+                emptyContainer?.classList?.remove('hidden');
+            }
+
+            items.forEach(item => {
+                const match = !response.searchTerm
+                    || response.results.some(m => m.id === parseInt(item.dataset.id));
+                item.style.display = match ? '' : 'none';
+
+                if (match) {
+                    let parent = item.parentElement.closest('.js-sortable-item');
+                    while (parent) {
+                        parent.style.display = '';
+                        parent = parent.parentElement.closest('.js-sortable-item');
+                    }
+                }
+            });
+        }
     }));
 
     function elementsToArray(element) {
