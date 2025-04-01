@@ -205,13 +205,17 @@ class TreeViewRecords extends ListRecords
     public function search(string $searchTerm = ''): array
     {
         $searchTerm = strtolower(trim($searchTerm));
-        $results = $this->getTreeQueryBuilder()
+        $results = $this->searchQuery($this->getTreeQueryBuilder(), $searchTerm)
             ->withDepth()
-            ->whereRaw('LOWER(name) like ?', ["%{$searchTerm}%"])
             ->select('id')
             ->get()
             ->toArray();
 
         return compact('searchTerm', 'results');
+    }
+
+    public function searchQuery(Builder $builder, string $searchTerm = ''): Builder
+    {
+        return $builder->whereRaw('LOWER(name) like ?', ["%{$searchTerm}%"]);
     }
 }
