@@ -62,6 +62,7 @@ document.addEventListener('alpine:initializing', () => {
         },
 
         handleSort() {
+            this.fullTree = elementsToArray(document.querySelectorAll('#js-sortable-root-nodes'));
             this.$wire.sortRows(this.fullTree);
         },
 
