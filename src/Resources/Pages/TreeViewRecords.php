@@ -34,8 +34,10 @@ class TreeViewRecords extends ListRecords
 
     protected function getViewData(): array
     {
+        $rows = $this->getTreeQueryBuilder()->withDepth()->get()->toTree()->sortBy('_lft');
         return [
-            'rows' => $this->getTreeQueryBuilder()->withDepth()->get()->toTree()->sortBy('_lft'),
+            'rows' => $rows,
+            'hasRows' => $rows->isNotEmpty(),
             'maxDepth' => $this->getMaxDepth(),
             'sortable' => $this->canReorder(),
             'compact' => $this->getCompact(),
@@ -198,5 +200,21 @@ class TreeViewRecords extends ListRecords
     public function getRowBackground(Model $row): ?string
     {
         return null;
+    }
+
+    public function search(string $searchTerm = ''): array
+    {
+        $searchTerm = strtolower(trim($searchTerm));
+        $results = $this->searchQuery($this->getTreeQueryBuilder(), $searchTerm)
+            ->select('id')
+            ->get()
+            ->toArray();
+
+        return compact('searchTerm', 'results');
+    }
+
+    public function searchQuery(Builder $builder, string $searchTerm = ''): Builder
+    {
+        return $builder->whereRaw('LOWER(name) like ?', ["%{$searchTerm}%"]);
     }
 }
