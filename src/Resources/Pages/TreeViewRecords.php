@@ -5,12 +5,12 @@ namespace CubeAgency\FilamentTreeView\Resources\Pages;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class TreeViewRecords extends ListRecords
 {
-    protected static string $view = 'filament-tree-view::list-records';
+    protected string $view = 'filament-tree-view::list-records';
 
     public $page;
 
@@ -76,7 +76,7 @@ class TreeViewRecords extends ListRecords
 
     public function canReorder(): bool
     {
-        if (!$this->hasPermissions) {
+        if (! $this->hasPermissions) {
             return true;
         }
 
@@ -95,7 +95,7 @@ class TreeViewRecords extends ListRecords
 
     public function canCreate(): bool
     {
-        if (!$this->hasPermissions) {
+        if (! $this->hasPermissions) {
             return true;
         }
 
@@ -114,11 +114,11 @@ class TreeViewRecords extends ListRecords
 
     public function canEdit(Model $row): bool
     {
-        if (!$this->hasPermissions) {
+        if (! $this->hasPermissions) {
             return true;
         }
 
-        if (!$this->hasUserOnlyPolicy) {
+        if (! $this->hasUserOnlyPolicy) {
             return static::getResource()::canEdit($row);
         }
 
@@ -150,11 +150,11 @@ class TreeViewRecords extends ListRecords
 
     public function canDelete(Model $row): bool
     {
-        if (!$this->hasPermissions) {
+        if (! $this->hasPermissions) {
             return true;
         }
 
-        if (!$this->hasUserOnlyPolicy) {
+        if (! $this->hasUserOnlyPolicy) {
             return static::getResource()::canDelete($row);
         }
 
