@@ -87,6 +87,7 @@ class TreeViewRecords extends ListRecords
     public function createChildAction(): Action
     {
         return Action::make('createChild')
+            ->icon('heroicon-o-plus')
             ->authorize(fn () => $this->canCreate())
             ->url(function (array $arguments) {
                 return static::$resource::getUrl('create') . '?parentId=' . $arguments['row']['id'];
@@ -106,6 +107,7 @@ class TreeViewRecords extends ListRecords
     public function editAction(): Action
     {
         return Action::make('edit')
+            ->icon('heroicon-o-pencil-square')
             ->authorize(fn (array $arguments) => $this->canEdit($arguments['row']))
             ->url(function (array $arguments) {
                 return static::$resource::getUrl('edit', [$arguments['row']]);
@@ -129,6 +131,9 @@ class TreeViewRecords extends ListRecords
     public function deleteAction(): Action
     {
         return Action::make('delete')
+            ->icon('heroicon-o-trash')
+            ->modalIcon('heroicon-o-trash')
+            ->color('danger')
             ->authorize(function (array $arguments) {
                 $model = app(static::getModel());
                 $row = $model->newInstance($arguments['row'])
@@ -137,8 +142,6 @@ class TreeViewRecords extends ListRecords
                 return $this->canDelete($row);
             })
             ->requiresConfirmation()
-            ->color('danger')
-            ->modalIcon('heroicon-o-trash')
             ->action(function (array $arguments) {
                 $row = $this->getModel()::find($arguments['row']['id']);
 
