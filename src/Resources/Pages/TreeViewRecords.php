@@ -5,12 +5,12 @@ namespace CubeAgency\FilamentTreeView\Resources\Pages;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class TreeViewRecords extends ListRecords
 {
-    protected static string $view = 'filament-tree-view::list-records';
+    protected string $view = 'filament-tree-view::list-records';
 
     public $page;
 
@@ -76,7 +76,7 @@ class TreeViewRecords extends ListRecords
 
     public function canReorder(): bool
     {
-        if (!$this->hasPermissions) {
+        if (! $this->hasPermissions) {
             return true;
         }
 
@@ -87,6 +87,7 @@ class TreeViewRecords extends ListRecords
     public function createChildAction(): Action
     {
         return Action::make('createChild')
+            ->icon('heroicon-o-plus')
             ->authorize(fn () => $this->canCreate())
             ->url(function (array $arguments) {
                 return static::$resource::getUrl('create') . '?parentId=' . $arguments['row']['id'];
@@ -95,7 +96,7 @@ class TreeViewRecords extends ListRecords
 
     public function canCreate(): bool
     {
-        if (!$this->hasPermissions) {
+        if (! $this->hasPermissions) {
             return true;
         }
 
@@ -106,6 +107,7 @@ class TreeViewRecords extends ListRecords
     public function editAction(): Action
     {
         return Action::make('edit')
+            ->icon('heroicon-o-pencil-square')
             ->authorize(fn (array $arguments) => $this->canEdit($arguments['row']))
             ->url(function (array $arguments) {
                 return static::$resource::getUrl('edit', [$arguments['row']]);
@@ -114,11 +116,11 @@ class TreeViewRecords extends ListRecords
 
     public function canEdit(Model $row): bool
     {
-        if (!$this->hasPermissions) {
+        if (! $this->hasPermissions) {
             return true;
         }
 
-        if (!$this->hasUserOnlyPolicy) {
+        if (! $this->hasUserOnlyPolicy) {
             return static::getResource()::canEdit($row);
         }
 
@@ -129,6 +131,9 @@ class TreeViewRecords extends ListRecords
     public function deleteAction(): Action
     {
         return Action::make('delete')
+            ->icon('heroicon-o-trash')
+            ->modalIcon('heroicon-o-trash')
+            ->color('danger')
             ->authorize(function (array $arguments) {
                 $model = app(static::getModel());
                 $row = $model->newInstance($arguments['row'])
@@ -137,8 +142,6 @@ class TreeViewRecords extends ListRecords
                 return $this->canDelete($row);
             })
             ->requiresConfirmation()
-            ->color('danger')
-            ->modalIcon('heroicon-o-trash')
             ->action(function (array $arguments) {
                 $row = $this->getModel()::find($arguments['row']['id']);
 
@@ -150,11 +153,11 @@ class TreeViewRecords extends ListRecords
 
     public function canDelete(Model $row): bool
     {
-        if (!$this->hasPermissions) {
+        if (! $this->hasPermissions) {
             return true;
         }
 
-        if (!$this->hasUserOnlyPolicy) {
+        if (! $this->hasUserOnlyPolicy) {
             return static::getResource()::canDelete($row);
         }
 

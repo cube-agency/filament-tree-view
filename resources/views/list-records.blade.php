@@ -19,10 +19,17 @@
                     'divide-y divide-gray-200 !border-t-0',
                     'dark:bg-gray-900 dark:divide-gray/10 dark:border-t-gray/10',
                 ])>
-                    <x-filament-tables::empty-state
-                        :heading="__('filament-tables::table.empty.heading', ['model' => $model])"
-                        icon="heroicon-o-x-mark"
-                    />
+                    <div class="fi-ta-empty-state">
+                        <div class="fi-ta-empty-state-content">
+                            <div class="fi-ta-empty-state-icon-bg">
+                                {{ \Filament\Support\generate_icon_html('heroicon-o-bookmark', size: \Filament\Support\Enums\IconSize::Large) }}
+                            </div>
+
+                            <h2 class="fi-ta-empty-state-heading">
+                                {{ __('filament-tables::table.empty.heading', ['model' => $model]) }}
+                            </h2>
+                        </div>
+                    </div>
                 </div>
             @endforelse
         </div>
