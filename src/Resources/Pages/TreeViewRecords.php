@@ -20,6 +20,8 @@ class TreeViewRecords extends ListRecords
 
     protected array $permissionsCache = [];
 
+    public array $loadedRowActions = [];
+
     public function mount(): void
     {
         $this->page = static::$resource;
@@ -53,6 +55,16 @@ class TreeViewRecords extends ListRecords
         return [
             CreateAction::make(),
         ];
+    }
+
+    public function loadRowActions(string | int $rowKey): void
+    {
+        $this->loadedRowActions[(string) $rowKey] = true;
+    }
+
+    public function hasLoadedRowActions(Model $row): bool
+    {
+        return $this->loadedRowActions[(string) $row->getKey()] ?? false;
     }
 
     public function getRowActions(Model $row): array
