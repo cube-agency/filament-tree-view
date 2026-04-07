@@ -1,19 +1,24 @@
 @props(['row', 'page', 'compact' => false])
 
 @php
+    $rowKey = (string) $row->getKey();
     $url = $this->getRowUrl($row);
     $title = $this->getRowTitle($row);
     $prefix = $this->getRowPrefix($row);
     $suffix = $this->getRowSuffix($row);
-    $actions = $this->getRowActions($row);
+    $actionsLoaded = $this->hasLoadedRowActions($row);
+    $actions = $actionsLoaded ? $this->getRowActions($row) : [];
     $background = $this->getRowBackground($row);
     $childrenCount = $row->children->count();
 @endphp
 
 <div x-data="{
         open: false,
-        id: '{{ $row->getKey() }}',
+        id: '{{ $rowKey }}',
         sessionKey: '{{ str($page)->classBaseName() }}_opened_nodes',
+        actionsOpen: false,
+        actionsLoaded: @js($actionsLoaded),
+        actionsLoading: false,
         init() {
             let ids = JSON.parse(sessionStorage.getItem(this.sessionKey)) || [];
             this.open = ids.includes(this.id);
@@ -31,10 +36,35 @@
 
             sessionStorage.setItem(this.sessionKey, JSON.stringify(ids));
         },
+        loadActions() {
+            if (this.actionsLoaded || this.actionsLoading) {
+                return;
+            }
+
+            this.actionsLoading = true;
+
+            this.$wire.loadRowActions(this.id)
+                .then(() => {
+                    this.actionsLoaded = true;
+                    this.actionsOpen = true;
+                })
+                .finally(() => {
+                    this.actionsLoading = false;
+                });
+        },
+        toggleActions() {
+            if (! this.actionsLoaded) {
+                this.loadActions();
+
+                return;
+            }
+
+            this.actionsOpen = ! this.actionsOpen;
+        },
     }"
-    data-id="{{ $row->getKey() }}"
+    data-id="{{ $rowKey }}"
     class="js-sortable-item"
-    wire:key="{{ $row->getKey() }}"
+    wire:key="{{ $rowKey }}"
     data-sortable-item
 >
     <div class="fi-treeview-row flex items-center bg-white mb-2
@@ -70,17 +100,38 @@
                 </div>
             </div>
         </div>
-        <div>
-            @if (count($actions))
-                <x-filament-actions::group
-                        :actions="$actions"
-                        label="Actions"
-                        icon="heroicon-m-ellipsis-vertical"
-                        color="primary"
-                        size="lg"
-                        dropdown-placement="bottom-start"
-                />
-            @endif
+        <div class="relative" x-on:keydown.escape.window="actionsOpen = false">
+            <button
+                type="button"
+                class="fi-color fi-color-primary fi-text-color-600 hover:fi-text-color-700 dark:fi-text-color-500 dark:hover:fi-text-color-400 fi-icon-btn fi-size-lg fi-ac-icon-btn-group"
+                x-on:click="toggleActions"
+                x-bind:disabled="actionsLoading"
+                x-bind:aria-expanded="actionsOpen"
+                x-bind:aria-busy="actionsLoading"
+                aria-haspopup="menu"
+                aria-label="Actions"
+            >
+                <x-filament::icon x-show="!actionsLoading" icon="heroicon-m-ellipsis-vertical" class="fi-icon fi-size-lg" />
+                <x-filament::loading-indicator x-show="actionsLoading" class="fi-icon fi-size-lg" />
+            </button>
+
+            <div
+                x-cloak
+                x-show="actionsOpen"
+                x-transition:enter-start="fi-opacity-0"
+                x-transition:leave-end="fi-opacity-0"
+                x-on:click.outside="actionsOpen = false"
+                class="fi-dropdown-panel absolute right-0 z-20 mt-2 w-max"
+                role="menu"
+            >
+                <div class="fi-dropdown-list">
+                    @if ($actionsLoaded && count($actions))
+                        @foreach ($actions as $action)
+                            {{ $action->grouped() }}
+                        @endforeach
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 
