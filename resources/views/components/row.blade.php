@@ -127,9 +127,7 @@
                 <div class="fi-dropdown-list">
                     @if ($actionsLoaded && count($actions))
                         @foreach ($actions as $action)
-                            @if ($action->isVisible())
                             {{ $action->grouped() }}
-                            @endif
                         @endforeach
                     @endif
                 </div>
